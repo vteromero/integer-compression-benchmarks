@@ -1,0 +1,9 @@
+[submodule "benchmark"]
+	path = benchmark
+	url = https://github.com/google/benchmark
+[submodule "SIMDCompressionAndIntersection"]
+	path = SIMDCompressionAndIntersection
+	url = https://github.com/lemire/SIMDCompressionAndIntersection
+[submodule "VTEnc"]
+	path = VTEnc
+	url = https://github.com/vteromero/VTEnc
