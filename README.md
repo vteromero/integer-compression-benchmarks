@@ -30,7 +30,13 @@ The following results have been obtained on a laptop Ubuntu Desktop 19.04 with a
 
 ## Building
 
-To build this project, you first need to build the included libraries. It's highly recommended to follow the build instructions for each library in their respective repositories. However, for convenience, here is a quick list of instructions:
+To build this project, clone it in this way:
+
+```bash
+$ git clone --recurse-submodules https://github.com/vteromero/integer-compression-benchmarks
+```
+
+Then, you need to build the included libraries. It's highly recommended to follow the build instructions for each library in their respective repositories. However, for convenience, here is a quick list of instructions:
 
 #### Build benchmark
 
