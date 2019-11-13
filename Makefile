@@ -6,6 +6,9 @@ CC = g++
 CPPFLAGS = -Wall -O3 -std=c++11
 LDFLAGS = -lpthread
 
+SRC = $(wildcard *.cc)
+OBJ = $(SRC:.cc=.o)
+
 BENCHMARKDIR = benchmark
 VTENCDIR = VTEnc
 SIMDCOMPDIR = SIMDCompressionAndIntersection
@@ -23,7 +26,7 @@ all: intbench
 %.o: %.cc
 	${CC} -c $(CPPFLAGS) $<
 
-intbench: intbench.o
+intbench: $(OBJ)
 	$(CC) $(CPPFLAGS) $^ $(BENCHMARKLIB) $(VTENCLIB) $(SIMDCOMPLIB) $(LDFLAGS) -o $@
 
 .PHONY: clean
