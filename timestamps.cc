@@ -91,11 +91,14 @@ BENCHMARK_F(TimestampsDataSet, Copy)(benchmark::State& state) {
 
 BENCHMARK_F(TimestampsDataSet, VTEncEncode)(benchmark::State& state) {
   CompressionStats stats(state);
-  size_t encodedLength;
-  std::vector<uint8_t> encoded(vtenc_list_max_encoded_size_u32(timestamps.size()));
+  size_t encodedLength = 0;
+  std::vector<uint8_t> encoded(vtenc_max_encoded_size32(timestamps.size()));
+  VtencEncoder encoder;
+
+  vtenc_encoder_init(&encoder);
 
   for (auto _ : state)
-    vtenc_list_encode_u32(timestamps.data(), timestamps.size(), encoded.data(), encoded.size(), &encodedLength);
+    encodedLength = vtenc_encode32(&encoder, timestamps.data(), timestamps.size(), encoded.data(), encoded.size());
 
   stats.SetInputLengthInBytes(timestamps.size() * sizeof(uint32_t));
   stats.SetEncodedLengthInBytes(encodedLength);
@@ -104,14 +107,19 @@ BENCHMARK_F(TimestampsDataSet, VTEncEncode)(benchmark::State& state) {
 
 BENCHMARK_F(TimestampsDataSet, VTEncDecode)(benchmark::State& state) {
   CompressionStats stats(state);
-  size_t encodedLength;
-  std::vector<uint8_t> encoded(vtenc_list_max_encoded_size_u32(timestamps.size()));
-  vtenc_list_encode_u32(timestamps.data(), timestamps.size(), encoded.data(), encoded.size(), &encodedLength);
+  size_t encodedLength = 0;
+  std::vector<uint8_t> encoded(vtenc_max_encoded_size32(timestamps.size()));
+  VtencEncoder encoder;
+  VtencDecoder decoder;
 
-  std::vector<uint32_t> decoded(vtenc_list_decoded_size_u32(encoded.data(), encodedLength));
+  vtenc_encoder_init(&encoder);
+  encodedLength = vtenc_encode32(&encoder, timestamps.data(), timestamps.size(), encoded.data(), encoded.size());
+
+  std::vector<uint32_t> decoded(timestamps.size());
+  vtenc_decoder_init(&decoder);
 
   for (auto _ : state)
-    vtenc_list_decode_u32(encoded.data(), encodedLength, decoded.data(), decoded.size());
+    vtenc_decode32(&decoder, encoded.data(), encodedLength, decoded.data(), decoded.size());
 
   if (timestamps != decoded) {
     throw std::logic_error("equality check failed");
