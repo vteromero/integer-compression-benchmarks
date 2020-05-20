@@ -140,10 +140,11 @@ static void encodeWithVTEnc(
 {
   state.PauseTiming();
   size_t encodedLength;
-  std::vector<uint8_t> encoded(vtenc_set_max_encoded_size_u32(data.size()));
+  std::vector<uint8_t> encoded(vtenc_max_encoded_size32(data.size()));
+  VtencEncoder encoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = static_cast<size_t>(state.range(0)) };
   state.ResumeTiming();
 
-  vtenc_set_encode_u32(data.data(), data.size(), encoded.data(), encoded.size(), &encodedLength);
+  encodedLength = vtenc_encode32(&encoder, data.data(), data.size(), encoded.data(), encoded.size());
 
   state.PauseTiming();
   stats.UpdateInputLengthInBytes(data.size() * sizeof(uint32_t));
@@ -157,13 +158,14 @@ static void decodeWithVTEnc(
   CompressionStats& stats)
 {
   state.PauseTiming();
-  size_t encodedLength;
-  std::vector<uint8_t> encoded(vtenc_set_max_encoded_size_u32(data.size()));
-  vtenc_set_encode_u32(data.data(), data.size(), encoded.data(), encoded.size(), &encodedLength);
-  std::vector<uint32_t> decoded(vtenc_set_decoded_size_u32(encoded.data(), encodedLength));
+  std::vector<uint8_t> encoded(vtenc_max_encoded_size32(data.size()));
+  VtencEncoder encoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = static_cast<size_t>(state.range(0)) };
+  size_t encodedLength = vtenc_encode32(&encoder, data.data(), data.size(), encoded.data(), encoded.size());
+  std::vector<uint32_t> decoded(data.size());
+  VtencDecoder decoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = static_cast<size_t>(state.range(0)) };
   state.ResumeTiming();
 
-  vtenc_set_decode_u32(encoded.data(), encodedLength, decoded.data(), decoded.size());
+  vtenc_decode32(&decoder, encoded.data(), encodedLength, decoded.data(), decoded.size());
 
   state.PauseTiming();
   if (data != decoded) {
@@ -308,13 +310,19 @@ BENCHMARK_F(Gov2SortedDataSet, Copy)(benchmark::State& state) {
   benchmarkGov2SortedDataSet(this, state, encodeWithCopy);
 }
 
-BENCHMARK_F(Gov2SortedDataSet, VTEncEncode)(benchmark::State& state) {
+BENCHMARK_DEFINE_F(Gov2SortedDataSet, VTEncEncode)(benchmark::State& state) {
   benchmarkGov2SortedDataSet(this, state, encodeWithVTEnc);
 }
 
-BENCHMARK_F(Gov2SortedDataSet, VTEncDecode)(benchmark::State& state) {
+BENCHMARK_REGISTER_F(Gov2SortedDataSet, VTEncEncode)
+  ->RangeMultiplier(2)->Range(1, 1<<8);
+
+BENCHMARK_DEFINE_F(Gov2SortedDataSet, VTEncDecode)(benchmark::State& state) {
   benchmarkGov2SortedDataSet(this, state, decodeWithVTEnc);
 }
+
+BENCHMARK_REGISTER_F(Gov2SortedDataSet, VTEncDecode)
+  ->RangeMultiplier(2)->Range(1, 1<<8);
 
 BENCHMARK_F(Gov2SortedDataSet, DeltaVariableByteEncode)(benchmark::State& state) {
   benchmarkGov2SortedDataSet(this, state, encodeWithDeltaVariableByte);

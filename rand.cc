@@ -108,11 +108,12 @@ BENCHMARK_DEFINE_F(RandomUniform32, VTEncEncode)(benchmark::State& state) {
   CompressionStats stats(state);
   size_t len = state.range(0);
   std::vector<uint32_t> &data = dist_map[len];
-  size_t encodedLength;
-  std::vector<uint8_t> encoded(vtenc_set_max_encoded_size_u32(data.size()));
+  size_t encodedLength = 0;
+  std::vector<uint8_t> encoded(vtenc_max_encoded_size32(data.size()));
+  VtencEncoder encoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = 1 };
 
   for (auto _ : state)
-    vtenc_set_encode_u32(data.data(), data.size(), encoded.data(), encoded.size(), &encodedLength);
+    encodedLength = vtenc_encode32(&encoder, data.data(), data.size(), encoded.data(), encoded.size());
 
   stats.SetInputLengthInBytes(data.size() * sizeof(uint32_t));
   stats.SetEncodedLengthInBytes(encodedLength);
@@ -124,14 +125,15 @@ BENCHMARK_DEFINE_F(RandomUniform32, VTEncDecode)(benchmark::State& state) {
   size_t len = state.range(0);
   std::vector<uint32_t> &data = dist_map[len];
 
-  size_t encodedLength;
-  std::vector<uint8_t> encoded(vtenc_set_max_encoded_size_u32(data.size()));
-  vtenc_set_encode_u32(data.data(), data.size(), encoded.data(), encoded.size(), &encodedLength);
+  std::vector<uint8_t> encoded(vtenc_max_encoded_size32(data.size()));
+  VtencEncoder encoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = 1 };
+  size_t encodedLength = vtenc_encode32(&encoder, data.data(), data.size(), encoded.data(), encoded.size());
 
-  std::vector<uint32_t> decoded(vtenc_set_decoded_size_u32(encoded.data(), encodedLength));
+  std::vector<uint32_t> decoded(data.size());
+  VtencDecoder decoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = 1 };
 
   for (auto _ : state)
-    vtenc_set_decode_u32(encoded.data(), encodedLength, decoded.data(), decoded.size());
+    vtenc_decode32(&decoder, encoded.data(), encodedLength, decoded.data(), decoded.size());
 
   if (data != decoded) {
     throw std::logic_error("equality check failed");
