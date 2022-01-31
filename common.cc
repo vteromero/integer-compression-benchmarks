@@ -43,7 +43,7 @@ void CompressionStats::ResetEncodedLengthInBytes() {
 }
 
 void CompressionStats::SetFinalStats() {
-  _state.counters["compressionRatio"] = _state.counters["encodedLength"] / _state.counters["inputLength"];
+  _state.counters["compressionRatio"] = _state.counters["inputLength"] / _state.counters["encodedLength"];
   _state.SetBytesProcessed(int64_t(_state.iterations()) * int64_t(_state.counters["inputLength"]));
 }
 
