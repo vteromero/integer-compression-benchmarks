@@ -16,7 +16,7 @@
 #include "SIMDCompressionAndIntersection/include/fastpfor.h"
 #include "SIMDCompressionAndIntersection/include/variablebyte.h"
 #include "SIMDCompressionAndIntersection/include/varintgb.h"
-#include "VTEnc/vtenc.h"
+#include "../VTEnc/vtenc.h"
 
 class RandomUniform32 : public benchmark::Fixture {
 private:
@@ -110,30 +110,44 @@ BENCHMARK_DEFINE_F(RandomUniform32, VTEncEncode)(benchmark::State& state) {
   std::vector<uint32_t> &data = dist_map[len];
   size_t encodedLength = 0;
   std::vector<uint8_t> encoded(vtenc_max_encoded_size32(data.size()));
-  VtencEncoder encoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = 1 };
+  vtenc *encoder = vtenc_create();
+  assert(encoder != NULL);
+
+  vtenc_config(encoder, VTENC_CONFIG_ALLOW_REPEATED_VALUES, 0);
+  vtenc_config(encoder, VTENC_CONFIG_SKIP_FULL_SUBTREES, 1);
+  vtenc_config(encoder, VTENC_CONFIG_MIN_CLUSTER_LENGTH, 1);
 
   for (auto _ : state)
-    encodedLength = vtenc_encode32(&encoder, data.data(), data.size(), encoded.data(), encoded.size());
+    vtenc_encode32(encoder, data.data(), data.size(), encoded.data(), encoded.size());
+
+  encodedLength = vtenc_encoded_size(encoder);
 
   stats.SetInputLengthInBytes(data.size() * sizeof(uint32_t));
   stats.SetEncodedLengthInBytes(encodedLength);
   stats.SetFinalStats();
+
+  vtenc_destroy(encoder);
 }
 
 BENCHMARK_DEFINE_F(RandomUniform32, VTEncDecode)(benchmark::State& state) {
   CompressionStats stats(state);
   size_t len = state.range(0);
   std::vector<uint32_t> &data = dist_map[len];
-
   std::vector<uint8_t> encoded(vtenc_max_encoded_size32(data.size()));
-  VtencEncoder encoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = 1 };
-  size_t encodedLength = vtenc_encode32(&encoder, data.data(), data.size(), encoded.data(), encoded.size());
+  vtenc *handler = vtenc_create();
+  assert(handler != NULL);
 
+  vtenc_config(handler, VTENC_CONFIG_ALLOW_REPEATED_VALUES, 0);
+  vtenc_config(handler, VTENC_CONFIG_SKIP_FULL_SUBTREES, 1);
+  vtenc_config(handler, VTENC_CONFIG_MIN_CLUSTER_LENGTH, 1);
+
+  vtenc_encode32(handler, data.data(), data.size(), encoded.data(), encoded.size());
+
+  size_t encodedLength = vtenc_encoded_size(handler);
   std::vector<uint32_t> decoded(data.size());
-  VtencDecoder decoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = 1 };
 
   for (auto _ : state)
-    vtenc_decode32(&decoder, encoded.data(), encodedLength, decoded.data(), decoded.size());
+    vtenc_decode32(handler, encoded.data(), encodedLength, decoded.data(), decoded.size());
 
   if (data != decoded) {
     throw std::logic_error("equality check failed");
@@ -142,6 +156,8 @@ BENCHMARK_DEFINE_F(RandomUniform32, VTEncDecode)(benchmark::State& state) {
   stats.SetInputLengthInBytes(data.size() * sizeof(uint32_t));
   stats.SetEncodedLengthInBytes(encodedLength);
   stats.SetFinalStats();
+
+  vtenc_destroy(handler);
 }
 
 BENCHMARK_DEFINE_F(RandomUniform32, DeltaVariableByteEncode)(benchmark::State& state) {
