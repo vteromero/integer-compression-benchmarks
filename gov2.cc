@@ -14,7 +14,7 @@
 #include "SIMDCompressionAndIntersection/include/fastpfor.h"
 #include "SIMDCompressionAndIntersection/include/variablebyte.h"
 #include "SIMDCompressionAndIntersection/include/varintgb.h"
-#include "../VTEnc/vtenc.h"
+#include "VTEnc/vtenc.h"
 
 class Gov2SortedDataSet : public benchmark::Fixture {
 private:
