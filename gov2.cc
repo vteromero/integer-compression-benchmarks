@@ -161,23 +161,6 @@ static void decodeWithVTEnc(
   benchmark::State& state,
   CompressionStats& stats)
 {
-  /*state.PauseTiming();
-  std::vector<uint8_t> encoded(vtenc_max_encoded_size32(data.size()));
-  VtencEncoder encoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = static_cast<size_t>(state.range(0)) };
-  size_t encodedLength = vtenc_encode32(&encoder, data.data(), data.size(), encoded.data(), encoded.size());
-  std::vector<uint32_t> decoded(data.size());
-  VtencDecoder decoder = { .allow_repeated_values = 0, .skip_full_subtrees = 1, .min_cluster_length = static_cast<size_t>(state.range(0)) };
-  state.ResumeTiming();
-
-  vtenc_decode32(&decoder, encoded.data(), encodedLength, decoded.data(), decoded.size());
-
-  state.PauseTiming();
-  if (data != decoded) {
-    throw std::logic_error("equality check failed");
-  }
-  stats.UpdateInputLengthInBytes(data.size() * sizeof(uint32_t));
-  stats.UpdateEncodedLengthInBytes(encodedLength);
-  state.ResumeTiming();*/
   state.PauseTiming();
   std::vector<uint8_t> encoded(vtenc_max_encoded_size32(data.size()));
   vtenc *handler = vtenc_create();
