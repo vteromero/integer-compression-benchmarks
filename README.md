@@ -57,7 +57,7 @@ The following results have been obtained on a laptop Ubuntu Desktop 21.10 with a
 To build this project, clone it in this way:
 
 ```bash
-$ git clone --recurse-submodules https://github.com/vteromero/integer-compression-benchmarks
+git clone --recurse-submodules https://github.com/vteromero/integer-compression-benchmarks
 ```
 
 Then, build the included libraries. It's highly recommended to follow the build instructions for each library in their respective repositories. However, for convenience, here is a quick list of instructions:
@@ -66,31 +66,31 @@ Then, build the included libraries. It's highly recommended to follow the build 
 
 ```bash
 # Benchmark requires Google Test as a dependency. Add the source tree as a subdirectory.
-$ git clone https://github.com/google/googletest.git benchmark/googletest
+git clone https://github.com/google/googletest.git benchmark/googletest
 # Go to the library root directory
-$ cd benchmark
+cd benchmark
 # Make a build directory to place the build output.
-$ mkdir build && cd build
+mkdir build && cd build
 # Generate a Makefile with cmake.
 # Use cmake -G <generator> to generate a different file type.
-$ cmake -DCMAKE_BUILD_TYPE=Release ../
+cmake -DCMAKE_BUILD_TYPE=Release ../
 # Build the library.
 # Use make -j<number_of_parallel_jobs> to speed up the build process, e.g. make -j8 .
-$ make
+make
 ```
 
 #### Build SIMDCompressionAndIntersection
 
 ```bash
-$ cd SIMDCompressionAndIntersection
-$ make
+cd SIMDCompressionAndIntersection
+make
 ```
 
 #### Build VTEnc
 
 ```bash
-$ cd VTEnc
-$ make
+cd VTEnc
+make
 ```
 
 Once the included libraries have been built, run `make` in the root directory. That will generate the executable `intbench`.
@@ -102,16 +102,16 @@ You can invoke `intbench` in a variety of ways. Here are some examples:
 ```bash
 # '--data-dir' option is required and indicates the path to the directory that
 # contains the data sets.
-$ ./intbench --data-dir=/home/user/data
+./intbench --data-dir=/home/user/data
 
 # With '--benchmark_filter' you can choose which benchmarks to run.
-$ ./intbench --data-dir=/home/user/data --benchmark_filter=TimestampsDataSet
+./intbench --data-dir=/home/user/data --benchmark_filter=TimestampsDataSet
 
 # '--benchmark_list_tests' lists all the available benchmarks.
-$ ./intbench --data-dir=/home/user/data --benchmark_list_tests
+./intbench --data-dir=/home/user/data --benchmark_list_tests
 
 # Use '--help' to get more information about the available options.
-$ ./intbench --data-dir=/home/user/data --help
+./intbench --data-dir=/home/user/data --help
 ```
 
 ## License
