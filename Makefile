@@ -10,7 +10,7 @@ SRC = $(wildcard *.cc)
 OBJ = $(SRC:.cc=.o)
 
 BENCHMARKDIR = benchmark
-VTENCDIR = ../VTEnc
+VTENCDIR = VTEnc
 SIMDCOMPDIR = SIMDCompressionAndIntersection
 
 BENCHMARKLIB = $(BENCHMARKDIR)/build/src/libbenchmark.a
