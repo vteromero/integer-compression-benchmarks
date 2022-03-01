@@ -10,39 +10,39 @@ These are the data sets that have been tested so far:
 
 ## Results
 
-The following results have been obtained on a laptop Ubuntu Desktop 21.04 with a Core i7-6700HQ CPU @ 2.60GHz x 8.
+The following results have been obtained on a laptop Ubuntu Desktop 21.10 with a Core i7-6700HQ CPU @ 2.60GHz x 8.
 
 * `ts.txt`:
 
  | Algorithm          |Encoded Size|Compression Ratio|Encoding Speed |Decoding Speed|
  |:-------------------|-----------:|----------------:|--------------:|-------------:|
- | VTEnc/1 (\*)       |  **21,679**|       **26,622**|  **102.9 G/s**|    756.66 M/s|
- | Delta+FastPFor256  |   1,179,312|            489.4|       1.57 G/s|      3.64 G/s|
- | Delta+FastPFor128  |   2,306,544|            250.2|       1.36 G/s|      3.87 G/s|
- | Delta+BinaryPacking|   4,552,280|            126.8|       6.68 G/s|      4.30 G/s|
- | Delta+VariableByte | 144,285,504|              4.0|       3.89 G/s|      2.39 G/s|
- | Delta+VarIntGB     | 180,356,880|              3.2|       3.61 G/s|  **6.75 G/s**|
- | Copy               | 577,141,992|              1.0|      10.34 G/s|       -      |
+ | VTEnc/1 (\*)       |  **21,679**|       **26,622**| **102.28 G/s**|  **7.32 G/s**|
+ | Delta+FastPFor256  |   1,179,312|            489.4|       1.45 G/s|      3.61 G/s|
+ | Delta+FastPFor128  |   2,306,544|            250.2|       1.58 G/s|      3.88 G/s|
+ | Delta+BinaryPacking|   4,552,280|            126.8|       6.76 G/s|      4.31 G/s|
+ | Delta+VariableByte | 144,285,504|              4.0|       3.89 G/s|      3.43 G/s|
+ | Delta+VarIntGB     | 180,356,880|              3.2|       5.05 G/s|      6.73 G/s|
+ | Copy               | 577,141,992|              1.0|      11.83 G/s|       -      |
 
 * `gov2.sorted`:
 
  | Algorithm          |Encoded Size     |Compression Ratio|Encoding Speed|Decoding Speed|
  |:-------------------|----------------:|----------------:|-------------:|-------------:|
- | VTEnc/1            |**2,885,170,285**|         **8.29**|    166.07 M/s|    179.07 M/s|
- | VTEnc/2            |    2,930,842,147|             8.16|    223.19 M/s|    242.87 M/s|
- | VTEnc/4            |    3,144,764,347|             7.61|    318.03 M/s|    340.20 M/s|
- | VTEnc/8            |    3,482,164,190|             6.87|    458.59 M/s|    481.60 M/s|
- | Delta+FastPFor128  |    3,849,161,656|             6.21|    629.50 M/s|    630.37 M/s|
- | Delta+FastPFor256  |    3,899,341,376|             6.13|    659.85 M/s|    659.61 M/s|
- | VTEnc/16           |    3,922,307,294|             6.10|    622.15 M/s|    643.18 M/s|
- | Delta+BinaryPacking|    4,329,919,808|             5.52|  **2.35 G/s**|      2.34 G/s|
- | VTEnc/32           |    4,447,792,753|             5.38|    838.66 M/s|    877.01 M/s|
- | VTEnc/64           |    5,044,828,934|             4.74|  1,072.09 M/s|  1,121.33 M/s|
- | VTEnc/128          |    5,719,368,620|             4.18|      1.25 G/s|      1.32 G/s|
- | VTEnc/256          |    6,561,323,112|             3.65|      1.39 G/s|      1.47 G/s|
- | Delta+VariableByte |    6,572,084,696|             3.64|      1.63 G/s|      1.32 G/s|
- | Delta+VarIntGB     |    7,923,819,720|             3.01|      1.75 G/s|  **2.96 G/s**|
- | Copy               |   23,918,860,964|             1.00|      4.94 G/s|       -      |
+ | VTEnc/1            |**2,885,170,285**|         **8.29**|    154.76 M/s|    210.99 M/s|
+ | VTEnc/2            |    2,930,842,147|             8.16|    213.90 M/s|    282.39 M/s|
+ | VTEnc/4            |    3,144,764,347|             7.61|    306.40 M/s|    411.75 M/s|
+ | VTEnc/8            |    3,482,164,190|             6.87|    443.06 M/s|    594.89 M/s|
+ | Delta+FastPFor128  |    3,849,161,656|             6.21|    615.66 M/s|    615.64 M/s|
+ | Delta+FastPFor256  |    3,899,341,376|             6.13|    621.15 M/s|    621.17 M/s|
+ | VTEnc/16           |    3,922,307,294|             6.10|    639.35 M/s|    829.11 M/s|
+ | Delta+BinaryPacking|    4,329,919,808|             5.52|  **2.30 G/s**|      2.33 G/s|
+ | VTEnc/32           |    4,447,792,753|             5.38|    901.11 M/s|  1,124.46 M/s|
+ | VTEnc/64           |    5,044,828,934|             4.74|      1.15 G/s|      1.42 G/s|
+ | VTEnc/128          |    5,719,368,620|             4.18|      1.42 G/s|      1.68 G/s|
+ | VTEnc/256          |    6,561,323,112|             3.65|      1.60 G/s|      1.83 G/s|
+ | Delta+VariableByte |    6,572,084,696|             3.64|      1.62 G/s|      1.52 G/s|
+ | Delta+VarIntGB     |    7,923,819,720|             3.01|      2.03 G/s|  **2.97 G/s**|
+ | Copy               |   23,918,860,964|             1.00|      5.10 G/s|       -      |
 
  (\*) Number alongside VTEnc indicates value of `min_cluster_length` encoding parameter.
 
