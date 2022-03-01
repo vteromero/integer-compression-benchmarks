@@ -91,35 +91,31 @@ BENCHMARK_F(TimestampsDataSet, Copy)(benchmark::State& state) {
 
 BENCHMARK_F(TimestampsDataSet, VTEncEncode)(benchmark::State& state) {
   CompressionStats stats(state);
-  size_t encodedLength = 0;
   std::vector<uint8_t> encoded(vtenc_max_encoded_size32(timestamps.size()));
-  VtencEncoder encoder;
-
-  vtenc_encoder_init(&encoder);
+  vtenc *handler = vtenc_create();
 
   for (auto _ : state)
-    encodedLength = vtenc_encode32(&encoder, timestamps.data(), timestamps.size(), encoded.data(), encoded.size());
+    vtenc_encode32(handler, timestamps.data(), timestamps.size(), encoded.data(), encoded.size());
 
   stats.SetInputLengthInBytes(timestamps.size() * sizeof(uint32_t));
-  stats.SetEncodedLengthInBytes(encodedLength);
+  stats.SetEncodedLengthInBytes(vtenc_encoded_size(handler));
   stats.SetFinalStats();
+
+  vtenc_destroy(handler);
 }
 
 BENCHMARK_F(TimestampsDataSet, VTEncDecode)(benchmark::State& state) {
   CompressionStats stats(state);
-  size_t encodedLength = 0;
   std::vector<uint8_t> encoded(vtenc_max_encoded_size32(timestamps.size()));
-  VtencEncoder encoder;
-  VtencDecoder decoder;
-
-  vtenc_encoder_init(&encoder);
-  encodedLength = vtenc_encode32(&encoder, timestamps.data(), timestamps.size(), encoded.data(), encoded.size());
+  vtenc *handler = vtenc_create();
+  
+  vtenc_encode32(handler, timestamps.data(), timestamps.size(), encoded.data(), encoded.size());
+  size_t encodedLength = vtenc_encoded_size(handler);
 
   std::vector<uint32_t> decoded(timestamps.size());
-  vtenc_decoder_init(&decoder);
 
   for (auto _ : state)
-    vtenc_decode32(&decoder, encoded.data(), encodedLength, decoded.data(), decoded.size());
+    vtenc_decode32(handler, encoded.data(), encodedLength, decoded.data(), decoded.size());
 
   if (timestamps != decoded) {
     throw std::logic_error("equality check failed");
@@ -128,6 +124,8 @@ BENCHMARK_F(TimestampsDataSet, VTEncDecode)(benchmark::State& state) {
   stats.SetInputLengthInBytes(timestamps.size() * sizeof(uint32_t));
   stats.SetEncodedLengthInBytes(encodedLength);
   stats.SetFinalStats();
+
+  vtenc_destroy(handler);
 }
 
 BENCHMARK_F(TimestampsDataSet, DeltaVariableByteEncode)(benchmark::State& state) {
