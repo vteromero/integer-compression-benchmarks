@@ -48,9 +48,9 @@ The following results have been obtained on a laptop Ubuntu Desktop 21.10 with a
 
 ## Included libraries
 
-* [benchmark](https://github.com/google/benchmark): benchmarking library created by Google.
+* [benchmark v1.6.1](https://github.com/google/benchmark/tree/v1.6.1): benchmarking library created by Google.
 * [SIMDCompressionAndIntersection](https://github.com/lemire/SIMDCompressionAndIntersection): C++ library to encode/decode sorted lists of integers. It provides a series of integer algorithms optimised to work with sorted lists.
-* [VTEnc](https://github.com/vteromero/VTEnc): C library that implements VTEnc algorithm.
+* [VTEnc v0.3.0](https://github.com/vteromero/VTEnc/tree/v0.3.0): C library that implements VTEnc algorithm.
 
 ## Building
 
@@ -65,18 +65,16 @@ Then, build the included libraries. It's highly recommended to follow the build 
 #### Build benchmark
 
 ```bash
-# Benchmark requires Google Test as a dependency. Add the source tree as a subdirectory.
-git clone https://github.com/google/googletest.git benchmark/googletest
 # Go to the library root directory
-cd benchmark
+$ cd benchmark
 # Make a build directory to place the build output.
-mkdir build && cd build
-# Generate a Makefile with cmake.
-# Use cmake -G <generator> to generate a different file type.
-cmake -DCMAKE_BUILD_TYPE=Release ../
+$ cmake -E make_directory "build"
+# Generate build system files with cmake, and download any dependencies.
+$ cmake -E chdir "build" cmake -DBENCHMARK_DOWNLOAD_DEPENDENCIES=on -DCMAKE_BUILD_TYPE=Release ../
+# or, starting with CMake 3.13, use a simpler form:
+# cmake -DCMAKE_BUILD_TYPE=Release -S . -B "build"
 # Build the library.
-# Use make -j<number_of_parallel_jobs> to speed up the build process, e.g. make -j8 .
-make
+$ cmake --build "build" --config Release
 ```
 
 #### Build SIMDCompressionAndIntersection
